@@ -13,6 +13,11 @@ set(HEADERS
     psd/tiio_psd.h
     svg/tiio_svg.h
     tzl/tiio_tzl.h
+    tzl/tiio_tzl_common.h
+    tzl/tiio_tzl_level_reader.h
+    tzl/tiio_tzl_image_reader.h
+    tzl/tiio_tzl_level_writer.h
+    tzl/tiio_tzl_image_writer.h
     ../include/tnzimage.h
     mov/tiio_mov_proxy.h
     3gp/tiio_3gp_proxy.h
@@ -40,7 +45,10 @@ set(SOURCES
     png/tiio_png.cpp
     psd/tiio_psd.cpp
     svg/tiio_svg.cpp
-    tzl/tiio_tzl.cpp
+        tzl/tiio_tzl_level_reader.cpp
+    tzl/tiio_tzl_image_reader.cpp
+    tzl/tiio_tzl_level_writer.cpp
+    tzl/tiio_tzl_image_writer.cpp
     mov/tiio_mov_proxy.cpp
     3gp/tiio_3gp_proxy.cpp
     ffmpeg/tiio_gif.cpp
