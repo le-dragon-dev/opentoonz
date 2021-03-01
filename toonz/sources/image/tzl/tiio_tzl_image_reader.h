@@ -30,12 +30,6 @@ private:
   // not implemented
   TImageReaderTzl(const TImageReaderTzl &);
   TImageReaderTzl &operator=(const TImageReaderTzl &src);
-  TImageP load10();
-  TImageP load11();
-  TImageP load13();  // Aggiunta iconcine
-  TImageP load14();  //	Aggiunto creator con lunghezza fissa
-  const TImageInfo *getImageInfo10() const;
-  const TImageInfo *getImageInfo11() const;  // vale anche le versioni > di 11
 
 public:
   //! Indice del frame del livello
