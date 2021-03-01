@@ -2,6 +2,9 @@
 
 #include "timage_io.h"
 
+// Constants
+const int CURRENT_VERSION = 14;
+
 // Forward declaration
 class TLevelWriterTzl;
 

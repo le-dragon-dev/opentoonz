@@ -2,27 +2,10 @@
 
 #include "tlevel_io.h"
 
-const int CURRENT_VERSION = 14;
+// Constants
 const int CREATOR_LENGTH  = 40;
 
 namespace {
-
-class Header {
-public:
-  enum RasType {
-    Raster32RGBM,
-    Raster64RGBM,
-    Raster32CM,
-    RasterGR8,
-    RasterUnknown
-  };
-
-  int m_lx;
-  int m_ly;
-  RasType m_rasType;
-};
-
-
 
 class TzlChunk {
 public:

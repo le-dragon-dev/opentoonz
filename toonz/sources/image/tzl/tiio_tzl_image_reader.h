@@ -3,6 +3,21 @@
 #include <tfilepath.h>
 #include <timage_io.h>
 
+class Header {
+public:
+  enum RasType {
+    Raster32RGBM,
+    Raster64RGBM,
+    Raster32CM,
+    RasterGR8,
+    RasterUnknown
+  };
+
+  int m_lx;
+  int m_ly;
+  RasType m_rasType;
+};
+
 // Forward declaration
 class TLevelReaderTzl;
 
