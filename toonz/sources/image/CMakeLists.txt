@@ -43,6 +43,7 @@ set(SOURCES
     png/tiio_png.cpp
     psd/tiio_psd.cpp
     svg/tiio_svg.cpp
+    tzl/tiio_tzl_structure.cpp
     tzl/tiio_tzl_writer.cpp
     tzl/tiio_tzl_reader.cpp
     mov/tiio_mov_proxy.cpp
