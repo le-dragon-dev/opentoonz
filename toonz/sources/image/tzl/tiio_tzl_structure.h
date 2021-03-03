@@ -47,3 +47,24 @@ struct TLVFileHeader {
   friend std::ostream& operator<<(std::ostream& os, const TLVFileHeader& header);
   friend std::istream& operator>>(std::istream& is, TLVFileHeader& header);
 };
+
+// ****************************************************************************
+// Toonz Raster Level offset table row
+// ****************************************************************************
+struct TVLOffsetTableRow {
+  TINT32 number {};
+  char   letter {};
+  TINT32 dataOffset {};
+  TINT32 dataSize {};
+
+  // Constructor
+  TVLOffsetTableRow(TINT32 number, char letter, TINT32 dataOffset, TINT32 dataSize):
+    number(number), letter(letter), dataOffset(dataOffset), dataSize(dataSize) {
+    assert(dataOffset > 0);
+    assert(dataSize > 0);
+  }
+
+  // Flow operators
+  friend std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header);
+  friend std::istream& operator>>(std::istream& is, TVLOffsetTableRow& header);
+};

@@ -25,7 +25,7 @@ TLVFileHeader::TLVFileHeader(const QString& magicWord, const QString& creator,
 
   // At the moment, only this magic word and codec are accepted
   assert(std::strncmp(this->magicWord, "TLV14", 5ull) == 0);
-  assert(std::strncmp(this->codec, "LZ0 ", 4ull) == 0);
+  assert(std::strncmp(this->codec, "LZ0 ", TLV_CODEC_SIZE) == 0);
 }
 
 // ****************************************************************************
@@ -45,7 +45,7 @@ bool TLVFileHeader::isValid() const {
                                iconTableOffset > sizeof(TLVFileHeader);
 
   // Codec should be LZ0 (at the moment)
-  const bool is_codec_valid = std::strncmp(codec, "LZ0 ", 4ull) == 0;
+  const bool is_codec_valid = std::strncmp(codec, "LZ0 ", TLV_CODEC_SIZE) == 0;
 
   return is_magic_valid && is_values_valid && is_codec_valid;
 }
@@ -69,8 +69,6 @@ std::ostream& operator<<(std::ostream& os, const TLVFileHeader& header) {
 // TLVFileHeader: Read a header from stream
 // ****************************************************************************
 std::istream& operator>>(std::istream& is, TLVFileHeader& header) {
-  char codec[TLV_CODEC_SIZE] {};
-
   is >> header.magicWord
      >> header.creator
      >> header.hdrSize
@@ -86,8 +84,30 @@ std::istream& operator>>(std::istream& is, TLVFileHeader& header) {
   assert(header.framecount > 0 && header.framecount < 60000);
   assert(header.frameTableOffset > sizeof(TLVFileHeader));
   assert(header.iconTableOffset > sizeof(TLVFileHeader));
-  assert(std::strncmp(header.codec, "LZ0 ", 4ull) == 0);
+  assert(std::strncmp(header.codec, "LZ0 ", TLV_CODEC_SIZE) == 0);
 
   return is;
 }
 
+// ****************************************************************************
+// TVLOffsetTableRow: Write an offset table row into stream
+// ****************************************************************************
+std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header) {
+  os << header.number << header.letter
+     << header.dataOffset << header.dataSize;
+
+  return os;
+}
+
+// ****************************************************************************
+// TVLOffsetTableRow: Read an offset table row from stream
+// ****************************************************************************
+std::istream& operator>>(std::istream& is, TVLOffsetTableRow& header) {
+  is >> header.number >> header.letter
+     >> header.dataOffset >> header.dataSize;
+
+  assert(header.dataOffset > 0);
+  assert(header.dataSize > 0);
+
+  return is;
+}
