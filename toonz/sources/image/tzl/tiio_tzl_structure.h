@@ -17,9 +17,9 @@ using TLVCodec     = char[TLV_CODEC_SIZE];
 const TLVCodec TLV_CODEC {'L', 'Z', '0', ' '};
 
 // ****************************************************************************
-// Toonz Raster Level file header
+// Toonz Raster Level header
 // ****************************************************************************
-struct TLVFileHeader {
+struct TLVLevelHeader {
   // Members
   TLVMagicWord magicWord {};
   TLVCreator creator {};
@@ -35,7 +35,7 @@ struct TLVFileHeader {
   TLVCodec codec {};
 
   // Constructor
-  TLVFileHeader(const QString& magicWord, const QString& creator,
+  TLVLevelHeader(const QString& magicWord, const QString& creator,
                 TINT32 hdrSize, TINT32 width, TINT32 height, TINT32 framecount,
                 TINT32 frameTableOffset, TINT32 iconTableOffset,
                 const QString& codec = TLV_CODEC);
@@ -44,8 +44,8 @@ struct TLVFileHeader {
   bool isValid() const;
 
   // Flow operators
-  friend std::ostream& operator<<(std::ostream& os, const TLVFileHeader& header);
-  friend std::istream& operator>>(std::istream& is, TLVFileHeader& header);
+  friend std::ostream& operator<<(std::ostream& os, const TLVLevelHeader& header);
+  friend std::istream& operator>>(std::istream& is, TLVLevelHeader& header);
 };
 
 // ****************************************************************************
@@ -54,12 +54,12 @@ struct TLVFileHeader {
 struct TVLOffsetTableRow {
   TINT32 number {};
   char   letter {};
-  TINT32 dataOffset {};
-  TINT32 dataSize {};
+  TINT32 imageHeaderOffset{};
+  TINT32 imageDataSize{};
 
   // Constructor
   TVLOffsetTableRow(TINT32 number, char letter, TINT32 dataOffset, TINT32 dataSize):
-    number(number), letter(letter), dataOffset(dataOffset), dataSize(dataSize) {
+    number(number), letter(letter), imageHeaderOffset(dataOffset), imageDataSize(dataSize) {
     assert(dataOffset > 0);
     assert(dataSize > 0);
   }
@@ -67,4 +67,25 @@ struct TVLOffsetTableRow {
   // Flow operators
   friend std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header);
   friend std::istream& operator>>(std::istream& is, TVLOffsetTableRow& header);
+};
+
+// ****************************************************************************
+// Toonz Raster Image header
+// ****************************************************************************
+struct TVLImageHeader {
+  TINT32 sbx0 {}, sby0 {};
+  TINT32 sbWidth {}, sbHeight {};
+  TINT32 pixelsDataSize {};
+  TINT32 dpix {}, dpiy {};
+
+  // Constructor
+  TVLImageHeader(TINT32 sbx0, TINT32 sby0, TINT32 sbWidth, TINT32 sbHeight,
+                 TINT32 pixelsDataSize, TINT32 dpix, TINT32 dpiy):
+    sbx0(sbx0), sby0(sbx0), sbWidth(sbWidth), sbHeight(sbHeight),
+    pixelsDataSize(pixelsDataSize), dpix(dpix), dpiy(dpiy)
+  {}
+
+  // Flow operators
+  friend std::ostream& operator<<(std::ostream& os, const TVLImageHeader& header);
+  friend std::istream& operator>>(std::istream& is, TVLImageHeader& header);
 };

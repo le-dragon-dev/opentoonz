@@ -1,9 +1,9 @@
 #include "tiio_tzl_structure.h"
 
 // ****************************************************************************
-// TLVFileHeader: Constructor
+// TLVLevelHeader: Constructor
 // ****************************************************************************
-TLVFileHeader::TLVFileHeader(const QString& magicWord, const QString& creator,
+TLVLevelHeader::TLVLevelHeader(const QString& magicWord, const QString& creator,
                              __int32 hdrSize, __int32 width, __int32 height,
                              __int32 framecount, __int32 frameTableOffset,
                              __int32 iconTableOffset, const QString& codec):
@@ -15,8 +15,8 @@ TLVFileHeader::TLVFileHeader(const QString& magicWord, const QString& creator,
   assert(width > 0);
   assert(height > 0);
   assert(framecount > 0 && framecount < 60000);
-  assert(frameTableOffset > sizeof(TLVFileHeader));
-  assert(iconTableOffset > sizeof(TLVFileHeader));
+  assert(frameTableOffset > sizeof(TLVLevelHeader));
+  assert(iconTableOffset > sizeof(TLVLevelHeader));
   assert(codec.length() == TLV_CODEC_SIZE);
 
   memcpy(this->magicWord, magicWord.toStdString().c_str(), TLV_MAGIC_WORD_SIZE);
@@ -29,20 +29,20 @@ TLVFileHeader::TLVFileHeader(const QString& magicWord, const QString& creator,
 }
 
 // ****************************************************************************
-// TLVFileHeader: Control the validity of:
+// TLVLevelHeader: Control the validity of:
 // - Magic word & codec
 // - Level width and height
 // - Frame count
 // - Offset tables
 // ****************************************************************************
-bool TLVFileHeader::isValid() const {
+bool TLVLevelHeader::isValid() const {
   // Magic word should be TLV14 (at the moment)
   const bool is_magic_valid = std::strncmp(magicWord, "TLV14", 5) == 0;
 
   const bool is_values_valid = levelWidth > 0 && levelHeight > 0        &&
                                framecount > 0 && framecount < 60000     &&
-                               frameTableOffset > sizeof(TLVFileHeader) &&
-                               iconTableOffset > sizeof(TLVFileHeader);
+                               frameTableOffset > sizeof(TLVLevelHeader) &&
+                               iconTableOffset > sizeof(TLVLevelHeader);
 
   // Codec should be LZ0 (at the moment)
   const bool is_codec_valid = std::strncmp(codec, "LZ0 ", TLV_CODEC_SIZE) == 0;
@@ -51,9 +51,9 @@ bool TLVFileHeader::isValid() const {
 }
 
 // ****************************************************************************
-// TLVFileHeader: Write the header into stream
+// TLVLevelHeader: Write the header into stream
 // ****************************************************************************
-std::ostream& operator<<(std::ostream& os, const TLVFileHeader& header) {
+std::ostream& operator<<(std::ostream& os, const TLVLevelHeader& header) {
   os << header.magicWord
      << header.creator
      << header.hdrSize
@@ -66,9 +66,9 @@ std::ostream& operator<<(std::ostream& os, const TLVFileHeader& header) {
 }
 
 // ****************************************************************************
-// TLVFileHeader: Read a header from stream
+// TLVLevelHeader: Read a header from stream
 // ****************************************************************************
-std::istream& operator>>(std::istream& is, TLVFileHeader& header) {
+std::istream& operator>>(std::istream& is, TLVLevelHeader& header) {
   is >> header.magicWord
      >> header.creator
      >> header.hdrSize
@@ -82,8 +82,8 @@ std::istream& operator>>(std::istream& is, TLVFileHeader& header) {
   assert(header.levelWidth > 0);
   assert(header.levelHeight > 0);
   assert(header.framecount > 0 && header.framecount < 60000);
-  assert(header.frameTableOffset > sizeof(TLVFileHeader));
-  assert(header.iconTableOffset > sizeof(TLVFileHeader));
+  assert(header.frameTableOffset > sizeof(TLVLevelHeader));
+  assert(header.iconTableOffset > sizeof(TLVLevelHeader));
   assert(std::strncmp(header.codec, "LZ0 ", TLV_CODEC_SIZE) == 0);
 
   return is;
@@ -94,7 +94,7 @@ std::istream& operator>>(std::istream& is, TLVFileHeader& header) {
 // ****************************************************************************
 std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header) {
   os << header.number << header.letter
-     << header.dataOffset << header.dataSize;
+     << header.imageHeaderOffset << header.imageDataSize;
 
   return os;
 }
@@ -104,10 +104,24 @@ std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header) {
 // ****************************************************************************
 std::istream& operator>>(std::istream& is, TVLOffsetTableRow& header) {
   is >> header.number >> header.letter
-     >> header.dataOffset >> header.dataSize;
+     >> header.imageHeaderOffset >> header.imageDataSize;
 
-  assert(header.dataOffset > 0);
-  assert(header.dataSize > 0);
+  assert(header.imageHeaderOffset > 0);
+  assert(header.imageDataSize > 0);
 
   return is;
+}
+
+// ****************************************************************************
+// TVLImageHeader: Write an offset table row into stream
+// ****************************************************************************
+std::ostream& operator<<(std::ostream& os, const TVLImageHeader& header) {
+  return <#initializer #>;
+}
+
+// ****************************************************************************
+// TVLImageHeader: Read an offset table row from stream
+// ****************************************************************************
+std::istream& operator>>(std::istream& is, TVLImageHeader& header) {
+  return <#initializer #>;
 }
