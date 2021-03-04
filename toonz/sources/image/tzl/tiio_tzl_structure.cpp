@@ -1,3 +1,6 @@
+#include <ostream>
+#include <istream>
+
 #include "tiio_tzl_structure.h"
 
 // ****************************************************************************
@@ -92,9 +95,9 @@ std::istream& operator>>(std::istream& is, TLVLevelHeader& header) {
 // ****************************************************************************
 // TVLOffsetTableRow: Write an offset table row into stream
 // ****************************************************************************
-std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header) {
-  os << header.number << header.letter
-     << header.imageHeaderOffset << header.imageDataSize;
+std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& tableRow) {
+  os << tableRow.number << tableRow.letter
+     << tableRow.imageHeaderOffset << tableRow.imageDataSize;
 
   return os;
 }
@@ -102,12 +105,12 @@ std::ostream& operator<<(std::ostream& os, const TVLOffsetTableRow& header) {
 // ****************************************************************************
 // TVLOffsetTableRow: Read an offset table row from stream
 // ****************************************************************************
-std::istream& operator>>(std::istream& is, TVLOffsetTableRow& header) {
-  is >> header.number >> header.letter
-     >> header.imageHeaderOffset >> header.imageDataSize;
+std::istream& operator>>(std::istream& is, TVLOffsetTableRow& tableRow) {
+  is >> tableRow.number >> tableRow.letter
+     >> tableRow.imageHeaderOffset >> tableRow.imageDataSize;
 
-  assert(header.imageHeaderOffset > 0);
-  assert(header.imageDataSize > 0);
+  assert(tableRow.imageHeaderOffset > 0);
+  assert(tableRow.imageDataSize > 0);
 
   return is;
 }
@@ -116,12 +119,24 @@ std::istream& operator>>(std::istream& is, TVLOffsetTableRow& header) {
 // TVLImageHeader: Write an offset table row into stream
 // ****************************************************************************
 std::ostream& operator<<(std::ostream& os, const TVLImageHeader& header) {
-  return <#initializer #>;
+  os << header.sbx0 << header.sby0
+     << header.sbWidth << header.sbHeight
+     << header.pixelsDataSize
+     << header.dpix << header.dpiy;
+
+  return os;
 }
 
 // ****************************************************************************
 // TVLImageHeader: Read an offset table row from stream
 // ****************************************************************************
 std::istream& operator>>(std::istream& is, TVLImageHeader& header) {
-  return <#initializer #>;
+  is >> header.sbx0 >> header.sby0
+     >> header.sbWidth >> header.sbHeight
+     >> header.pixelsDataSize
+     >> header.dpix >> header.dpiy;
+
+  header.pixelsDataOffset = static_cast<TINT32>(is.tellg());
+
+  return is;
 }

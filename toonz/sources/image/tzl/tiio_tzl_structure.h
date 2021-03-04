@@ -77,12 +77,15 @@ struct TVLImageHeader {
   TINT32 sbWidth {}, sbHeight {};
   TINT32 pixelsDataSize {};
   TINT32 dpix {}, dpiy {};
+  TINT32 pixelsDataOffset;
 
   // Constructor
   TVLImageHeader(TINT32 sbx0, TINT32 sby0, TINT32 sbWidth, TINT32 sbHeight,
-                 TINT32 pixelsDataSize, TINT32 dpix, TINT32 dpiy):
+                 TINT32 pixelsDataSize, TINT32 dpix, TINT32 dpiy,
+                 TINT32 headerOffset):
     sbx0(sbx0), sby0(sbx0), sbWidth(sbWidth), sbHeight(sbHeight),
-    pixelsDataSize(pixelsDataSize), dpix(dpix), dpiy(dpiy)
+    pixelsDataSize(pixelsDataSize), dpix(dpix), dpiy(dpiy),
+    pixelsDataOffset(headerOffset + static_cast<TINT32>(sizeof(TVLImageHeader) - sizeof(TINT32)))
   {}
 
   // Flow operators
