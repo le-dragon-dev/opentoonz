@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tnoncopyable.h"
+#include "tiio_tzl_structure.h"
 
 // ****************************************************************************
 // Toonz Raster Level Reader
@@ -8,16 +9,24 @@
 class TLevelReaderTzl final : public TLevelReader, private TNonCopyable<TLevelReaderTzl> {
   // Constructor / Destructor
 public:
-  explicit TLevelReaderTzl(const TFilePath &path)
-      : TLevelReader(path) {}
+  explicit TLevelReaderTzl(const TFilePath &path);
   ~TLevelReaderTzl() override = default;
-  TLevelReaderTzl(TLevelReaderTzl &&move);
-  TLevelReaderTzl & operator=(TLevelReaderTzl &&move);
+
+  // Virtuals to override
+public:
+  TLevelP loadInfo() override;
+  QString getCreator() override;
+
+  void doReadPalette(bool) override;
+  TImageReaderP getFrameReader(TFrameId id) override;
 
 public:
   static TLevelReader *create(const TFilePath &f) {
     return new TLevelReaderTzl(f);
   }
+
+private:
+  TLVLevelHeader m_levelHeader;
 };
 
 // ****************************************************************************
@@ -29,6 +38,4 @@ public:
   TImageReaderTzl(const TFilePath &path, const TFilePath &f,
                   const TFrameId &fid, TLevelReaderTzl *);
   ~TImageReaderTzl() override = default;
-  TImageReaderTzl(TImageReaderTzl &&move);
-  TImageReaderTzl & operator=(TImageReaderTzl &&move);
 };
