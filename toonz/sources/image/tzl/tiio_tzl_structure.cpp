@@ -52,13 +52,15 @@ TLVOffsetTable TLVLevelHeader::getOffsetTable(std::istream& is, TLVOffsetTableRo
 // TLVLevelHeader: Write the header into stream
 // ****************************************************************************
 std::ostream& operator<<(std::ostream& os, const TLVLevelHeader& header) {
-  os << header.magicWord
-     << header.creator
-     << header.hdrSize
-     << header.levelWidth << header.levelHeight
-     << header.framecount
-     << header.frameTableOffset << header.iconTableOffset
-     << TLV_CODEC;
+  os.write(header.magicWord, TLV_MAGIC_WORD_SIZE);
+  os.write(header.creator, TLV_CREATOR_SIZE);
+  os.write(reinterpret_cast<const char*>(&header.hdrSize), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.levelWidth), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.levelHeight), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.framecount), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.frameTableOffset), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.iconTableOffset), sizeof(TINT32));
+  os.write(header.codec, TLV_CODEC_SIZE);
 
   return os;
 }
@@ -86,6 +88,9 @@ std::istream& operator>>(std::istream& is, TLVLevelHeader& header) {
   assert(header.iconTableOffset > sizeof(TLVLevelHeader));
   assert(std::strncmp(header.codec, "LZO ", TLV_CODEC_SIZE) == 0);
 
+  if (!header.isValid())
+    is.exceptions(std::ios::badbit);
+
   return is;
 }
 
@@ -93,8 +98,10 @@ std::istream& operator>>(std::istream& is, TLVLevelHeader& header) {
 // TLVOffsetTableRow: Write an offset table row into stream
 // ****************************************************************************
 std::ostream& operator<<(std::ostream& os, const TLVOffsetTableRow& tableRow) {
-  os << tableRow.number << tableRow.letter
-     << tableRow.imageHeaderOffset << tableRow.imageDataSize;
+  os.write(reinterpret_cast<const char*>(&tableRow.number), sizeof(TINT32));
+  os.write(&tableRow.letter, 1);
+  os.write(reinterpret_cast<const char*>(&tableRow.imageHeaderOffset), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&tableRow.imageDataSize), sizeof(TINT32));
 
   return os;
 }
@@ -111,6 +118,9 @@ std::istream& operator>>(std::istream& is, TLVOffsetTableRow& tableRow) {
   assert(tableRow.imageHeaderOffset > 0);
   assert(tableRow.imageDataSize > 0);
 
+  if (tableRow.imageHeaderOffset <= 0 || tableRow.imageDataSize <= 0)
+    is.exceptions(std::ios::badbit);
+
   return is;
 }
 
@@ -118,10 +128,13 @@ std::istream& operator>>(std::istream& is, TLVOffsetTableRow& tableRow) {
 // TLVImageHeader: Write an offset table row into stream
 // ****************************************************************************
 std::ostream& operator<<(std::ostream& os, const TLVImageHeader& header) {
-  os << header.sbx0 << header.sby0
-     << header.sbWidth << header.sbHeight
-     << header.pixelsDataSize
-     << header.dpix << header.dpiy;
+  os.write(reinterpret_cast<const char*>(&header.sbx0), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.sby0), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.sbWidth), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.sbHeight), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.pixelsDataSize), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.dpix), sizeof(TINT32));
+  os.write(reinterpret_cast<const char*>(&header.dpiy), sizeof(TINT32));
 
   return os;
 }
@@ -130,10 +143,13 @@ std::ostream& operator<<(std::ostream& os, const TLVImageHeader& header) {
 // TLVImageHeader: Read an offset table row from stream
 // ****************************************************************************
 std::istream& operator>>(std::istream& is, TLVImageHeader& header) {
-  is >> header.sbx0 >> header.sby0
-     >> header.sbWidth >> header.sbHeight
-     >> header.pixelsDataSize
-     >> header.dpix >> header.dpiy;
+  is.read(reinterpret_cast<char*>(&header.sbx0), sizeof(TINT32));
+  is.read(reinterpret_cast<char*>(&header.sby0), sizeof(TINT32));
+  is.read(reinterpret_cast<char*>(&header.sbWidth), sizeof(TINT32));
+  is.read(reinterpret_cast<char*>(&header.sbHeight), sizeof(TINT32));
+  is.read(reinterpret_cast<char*>(&header.pixelsDataSize), sizeof(TINT32));
+  is.read(reinterpret_cast<char*>(&header.dpix), sizeof(TINT32));
+  is.read(reinterpret_cast<char*>(&header.dpiy), sizeof(TINT32));
 
   header.pixelsDataOffset = static_cast<TINT32>(is.tellg());
 
